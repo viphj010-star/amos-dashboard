@@ -3,11 +3,17 @@
   "version": "0.0.1",
   "description": "AMOS Dashboard MVP",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "start": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check": "wrangler deploy --dry-run"
   },
   "devDependencies": {
     "wrangler": "^4.31.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
