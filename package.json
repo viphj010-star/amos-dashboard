@@ -1,0 +1,13 @@
+{
+  "name": "amos-dashboard",
+  "version": "0.0.1",
+  "description": "AMOS Dashboard MVP",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.31.0"
+  }
+}
