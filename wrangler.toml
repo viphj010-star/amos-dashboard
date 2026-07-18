@@ -2,6 +2,8 @@ name = "amos-dashboard"
 main = "worker/index.js"
 compatibility_date = "2026-07-19"
 
+workers_dev = true
+
 [assets]
 directory = "./web"
 binding = "ASSETS"
