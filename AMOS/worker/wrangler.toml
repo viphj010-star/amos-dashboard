@@ -1,0 +1,16 @@
+name = "amos-api-proxy"
+main = "index.js"
+compatibility_date = "2026-01-01"
+
+# Pages와 같은 zone에 붙여서 상대경로(/api/...)가 그대로 동작하게 합니다.
+# your-domain.com 자리에 실제 도메인을 넣어주세요 (Cloudflare에 zone으로 등록된 도메인).
+routes = [
+  { pattern = "your-domain.com/api/*", zone_name = "your-domain.com" }
+]
+
+# 특정 오리진으로 제한하고 싶으면 주석 해제 후 값 변경 (기본은 '*')
+# [vars]
+# ALLOWED_ORIGIN = "https://your-domain.com"
+
+# CoinGecko 유료/데모 키를 쓰게 되면 아래 명령으로 시크릿 등록 (평문으로 여기 적지 마세요):
+#   wrangler secret put COINGECKO_API_KEY
