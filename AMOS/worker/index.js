@@ -222,21 +222,34 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // CORS Preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders(env) });
+      return new Response(null, {
+        headers: corsHeaders(env),
+      });
+    }
+
+    // GET만 지원
+    if (request.method !== 'GET') {
+      return jsonResponse(
+        JSON.stringify({ error: 'method not allowed' }),
+        405,
+        0,
+        env
+      );
     }
 
     const handler = ROUTES[url.pathname];
+
+    // API가 아니면 정적 파일 제공
     if (!handler) {
-      return jsonResponse(JSON.stringify({ error: 'not found', path: url.pathname }), 404, 0, env);
+      return env.ASSETS.fetch(request);
     }
 
-    // GET만 지원 (설계서 범위 밖의 쓰기 작업은 다루지 않음)
-    if (request.method !== 'GET') {
-      return jsonResponse(JSON.stringify({ error: 'method not allowed' }), 405, 0, env);
-    }
+    const isKlines =
+      url.pathname === '/api/spot/klines' ||
+      url.pathname === '/api/futures/klines';
 
-    const isKlines = url.pathname === '/api/spot/klines' || url.pathname === '/api/futures/klines';
     const ttl = isKlines
       ? klinesTtl(url)
       : {
@@ -248,10 +261,12 @@ export default {
           '/api/futures/depth': 0,
         }[url.pathname];
 
-    // 리뷰 메모: 예전엔 klines류를 여기서 캐시 래퍼 없이 handler(url,env)로 바로 반환했음 —
-    // jsonResponse가 Cache-Control 헤더는 세팅해도 Cache API(caches.default)에 직접 넣지 않으면
-    // 브라우저 자체 캐시에만 영향이 갈 뿐, 워커 응답이 CF 엣지에 실제로 캐시되진 않는다는 걸
-    // 놓쳤던 부분. withEdgeCache로 통일해서 실제 엣지 캐싱이 되도록 수정.
-    return withEdgeCache(request, ttl, () => handler(url, env), env, ctx);
+    return withEdgeCache(
+      request,
+      ttl,
+      () => handler(url, env),
+      env,
+      ctx
+    );
   },
 };
